@@ -1,0 +1,1562 @@
+{
+  "info": {
+    "_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "name": "PetStore API Tests - QA Assignment",
+    "description": "# PetStore API Test Collection\n\n**Author:** QA Automation Engineer Candidate\n**Date:** January 2026\n**API Base URL:** https://petstore.swagger.io/v2\n\n## Test Coverage\n\n### Endpoints Tested:\n1. **POST /pet** - Create a new pet (10 test cases)\n2. **GET /pet/{petId}** - Get pet by ID (10 test cases)\n3. **PUT /pet** - Update existing pet (5 test cases)\n4. **DELETE /pet/{petId}** - Delete pet (5 test cases)\n5. **GET /pet/findByStatus** - Find pets by status (5 test cases)\n\n**Total: 35 Test Cases**\n\n## Test Types:\n- ✅ Positive tests (happy path)\n- ❌ Negative tests (error handling)\n- 🔄 Boundary tests (edge cases)\n- ⚡ Performance tests (response time)\n- 🔐 Security tests (input validation)\n\n## How to Run:\n1. Import collection into Postman\n2. Run collection using Collection Runner\n3. View test results in Postman console",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://petstore.swagger.io/v2"
+    },
+    {
+      "key": "petId",
+      "value": ""
+    },
+    {
+      "key": "petName",
+      "value": "TestPet_{{$timestamp}}"
+    },
+    {
+      "key": "createdPetId",
+      "value": ""
+    },
+    {
+      "key": "longName",
+      "value": ""
+    },
+    {
+      "key": "minimalPetId",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "POST /pet - Create Pet",
+      "item": [
+        {
+          "name": "TC01 - Create pet with all valid fields",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Generate unique pet ID",
+                  "const uniqueId = Date.now();",
+                  "pm.collectionVariables.set('petId', uniqueId);",
+                  "pm.collectionVariables.set('petName', 'TestPet_' + uniqueId);"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test: Status code is 200",
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "// Test: Response has correct content type",
+                  "pm.test('Content-Type contains application/json', function () {",
+                  "    const contentType = pm.response.headers.get('Content-Type');",
+                  "    pm.expect(contentType).to.include('application/json');",
+                  "});",
+                  "",
+                  "// Test: Response body contains pet ID",
+                  "pm.test('Response contains pet ID', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.id).to.exist;",
+                  "    pm.expect(jsonData.id).to.be.a('number');",
+                  "    // Save pet ID for subsequent tests",
+                  "    pm.collectionVariables.set('createdPetId', jsonData.id);",
+                  "});",
+                  "",
+                  "// Test: Response body contains correct pet name",
+                  "pm.test('Response contains correct pet name', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.name).to.equal(pm.collectionVariables.get('petName'));",
+                  "});",
+                  "",
+                  "// Test: Response body contains category",
+                  "pm.test('Response contains category', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.category).to.exist;",
+                  "    pm.expect(jsonData.category.id).to.equal(1);",
+                  "    pm.expect(jsonData.category.name).to.equal('Dogs');",
+                  "});",
+                  "",
+                  "// Test: Response body contains status",
+                  "pm.test('Response contains status \"available\"', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.status).to.equal('available');",
+                  "});",
+                  "",
+                  "// Test: Response body contains tags",
+                  "pm.test('Response contains tags array', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.tags).to.be.an('array');",
+                  "    pm.expect(jsonData.tags.length).to.be.greaterThan(0);",
+                  "});",
+                  "",
+                  "// Test: Response body contains photoUrls",
+                  "pm.test('Response contains photoUrls array', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.photoUrls).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": {{petId}},\n  \"category\": {\n    \"id\": 1,\n    \"name\": \"Dogs\"\n  },\n  \"name\": \"{{petName}}\",\n  \"photoUrls\": [\n    \"https://example.com/photo1.jpg\",\n    \"https://example.com/photo2.jpg\"\n  ],\n  \"tags\": [\n    {\n      \"id\": 1,\n      \"name\": \"friendly\"\n    },\n    {\n      \"id\": 2,\n      \"name\": \"trained\"\n    }\n  ],\n  \"status\": \"available\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/pet",
+              "host": ["{{baseUrl}}"],
+              "path": ["pet"]
+            },
+            "description": "Create a new pet with all valid fields including category, tags, photoUrls, and status."
+          },
+          "response": []
+        },
+        {
+          "name": "TC02 - Create pet with minimum required fields",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const uniqueId = Date.now() + 1;",
+                  "pm.collectionVariables.set('minimalPetId', uniqueId);"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response contains pet with minimal data', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.id).to.exist;",
+                  "    pm.expect(jsonData.name).to.equal('MinimalPet');",
+                  "    pm.expect(jsonData.photoUrls).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"MinimalPet\",\n  \"photoUrls\": []\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/pet",
+              "host": ["{{baseUrl}}"],
+              "path": ["pet"]
+            },
+            "description": "Create pet with only required fields (name and photoUrls)"
+          },
+          "response": []
+        },
+        {
+          "name": "TC03 - Create pet with status 'pending'",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Pet status is pending', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.status).to.equal('pending');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": {{$timestamp}},\n  \"name\": \"PendingPet\",\n  \"photoUrls\": [\"https://example.com/pending.jpg\"],\n  \"status\": \"pending\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/pet",
+              "host": ["{{baseUrl}}"],
+              "path": ["pet"]
+            },
+            "description": "Create pet with status 'pending'"
+          },
+          "response": []
+        },
+        {
+          "name": "TC04 - Create pet with status 'sold'",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Pet status is sold', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.status).to.equal('sold');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": {{$timestamp}},\n  \"name\": \"SoldPet\",\n  \"photoUrls\": [\"https://example.com/sold.jpg\"],\n  \"status\": \"sold\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/pet",
+              "host": ["{{baseUrl}}"],
+              "path": ["pet"]
+            },
+            "description": "Create pet with status 'sold'"
+          },
+          "response": []
+        },
+        {
+          "name": "TC05 - Create pet with empty name",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Note: API accepts empty name, but we should verify behavior",
+                  "pm.test('Request is processed', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 400, 405]);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    pm.test('Pet created with empty name', function () {",
+                  "        const jsonData = pm.response.json();",
+                  "        pm.expect(jsonData.name).to.equal('');",
+                  "    });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"\",\n  \"photoUrls\": []\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/pet",
+              "host": ["{{baseUrl}}"],
+              "path": ["pet"]
+            },
+            "description": "Test boundary condition - empty pet name"
+          },
+          "response": []
+        },
+        {
+          "name": "TC06 - Create pet with invalid JSON body",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 400 or 500 for invalid JSON', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([400, 500]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ invalid json }"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/pet",
+              "host": ["{{baseUrl}}"],
+              "path": ["pet"]
+            },
+            "description": "Test error handling for invalid JSON body"
+          },
+          "response": []
+        },
+        {
+          "name": "TC07 - Create pet with special characters in name",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Special characters handled correctly', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.name).to.include('Special');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": {{$timestamp}},\n  \"name\": \"Special!@#$%^&*()Pet\",\n  \"photoUrls\": [\"https://example.com/special.jpg\"],\n  \"status\": \"available\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/pet",
+              "host": ["{{baseUrl}}"],
+              "path": ["pet"]
+            },
+            "description": "Test handling of special characters in pet name"
+          },
+          "response": []
+        },
+        {
+          "name": "TC08 - Create pet with very long name",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Generate a very long name",
+                  "let longName = 'A'.repeat(1000);",
+                  "pm.collectionVariables.set('longName', longName);"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Request handled (success or validation error)', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 400, 413]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": {{$timestamp}},\n  \"name\": \"{{longName}}\",\n  \"photoUrls\": [],\n  \"status\": \"available\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/pet",
+              "host": ["{{baseUrl}}"],
+              "path": ["pet"]
+            },
+            "description": "Test boundary condition - very long pet name"
+          },
+          "response": []
+        },
+        {
+          "name": "TC09 - Create pet with negative ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Request processed', function () {",
+                  "    // API may accept negative IDs or reject them",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 400]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": -12345,\n  \"name\": \"NegativeIdPet\",\n  \"photoUrls\": [],\n  \"status\": \"available\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/pet",
+              "host": ["{{baseUrl}}"],
+              "path": ["pet"]
+            },
+            "description": "Test handling of negative pet ID"
+          },
+          "response": []
+        },
+        {
+          "name": "TC10 - Create pet with multiple photo URLs",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Multiple photo URLs saved', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.photoUrls).to.be.an('array');",
+                  "    pm.expect(jsonData.photoUrls.length).to.equal(5);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": {{$timestamp}},\n  \"name\": \"MultiPhotoPet\",\n  \"photoUrls\": [\n    \"https://example.com/photo1.jpg\",\n    \"https://example.com/photo2.jpg\",\n    \"https://example.com/photo3.jpg\",\n    \"https://example.com/photo4.jpg\",\n    \"https://example.com/photo5.jpg\"\n  ],\n  \"status\": \"available\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/pet",
+              "host": ["{{baseUrl}}"],
+              "path": ["pet"]
+            },
+            "description": "Test creating pet with multiple photo URLs"
+          },
+          "response": []
+        }
+      ],
+      "description": "Test cases for POST /pet endpoint"
+    },
+    {
+      "name": "GET /pet/{petId} - Get Pet by ID",
+      "item": [
+        {
+          "name": "TC11 - Get existing pet by valid ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Content-Type contains application/json', function () {",
+                  "    const contentType = pm.response.headers.get('Content-Type');",
+                  "    pm.expect(contentType).to.include('application/json');",
+                  "});",
+                  "",
+                  "pm.test('Response contains pet data', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.id).to.exist;",
+                  "    pm.expect(jsonData.name).to.exist;",
+                  "});",
+                  "",
+                  "pm.test('Pet ID matches requested ID', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    const requestedId = parseInt(pm.collectionVariables.get('createdPetId'));",
+                  "    pm.expect(jsonData.id).to.equal(requestedId);",
+                  "});",
+                  "",
+                  "pm.test('Response has expected structure', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData).to.have.property('name');",
+                  "    pm.expect(jsonData).to.have.property('photoUrls');",
+                  "    pm.expect(jsonData).to.have.property('status');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/pet/{{createdPetId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["pet", "{{createdPetId}}"]
+            },
+            "description": "Retrieve pet by valid ID that was created in previous test"
+          },
+          "response": []
+        },
+        {
+          "name": "TC12 - Get pet with non-existent ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 404', function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});",
+                  "",
+                  "pm.test('Error message indicates pet not found', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.message).to.equal('Pet not found');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/pet/99999999999",
+              "host": ["{{baseUrl}}"],
+              "path": ["pet", "99999999999"]
+            },
+            "description": "Test 404 response for non-existent pet ID"
+          },
+          "response": []
+        },
+        {
+          "name": "TC13 - Get pet with invalid ID (string)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 400 or 404', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([400, 404]);",
+                  "});",
+                  "",
+                  "pm.test('Error message returned', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.message).to.exist;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/pet/invalidId",
+              "host": ["{{baseUrl}}"],
+              "path": ["pet", "invalidId"]
+            },
+            "description": "Test error handling for invalid (non-numeric) pet ID"
+          },
+          "response": []
+        },
+        {
+          "name": "TC14 - Get pet with negative ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code indicates error or not found', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([400, 404]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/pet/-1",
+              "host": ["{{baseUrl}}"],
+              "path": ["pet", "-1"]
+            },
+            "description": "Test handling of negative pet ID"
+          },
+          "response": []
+        },
+        {
+          "name": "TC15 - Get pet with zero ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code indicates error or not found', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([400, 404]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/pet/0",
+              "host": ["{{baseUrl}}"],
+              "path": ["pet", "0"]
+            },
+            "description": "Test handling of zero pet ID"
+          },
+          "response": []
+        },
+        {
+          "name": "TC16 - Get pet with special characters in ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code indicates error', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([400, 404, 405]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/pet/!@#$%",
+              "host": ["{{baseUrl}}"],
+              "path": ["pet", "!@#$%"]
+            },
+            "description": "Test handling of special characters in pet ID"
+          },
+          "response": []
+        },
+        {
+          "name": "TC17 - Get pet with very large ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Request handled appropriately', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([400, 404]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/pet/9999999999999999999999999",
+              "host": ["{{baseUrl}}"],
+              "path": ["pet", "9999999999999999999999999"]
+            },
+            "description": "Test handling of very large pet ID (boundary test)"
+          },
+          "response": []
+        },
+        {
+          "name": "TC18 - Get pet with Accept header XML",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200 or 404', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 404]);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    pm.test('Response is XML format', function () {",
+                  "        const contentType = pm.response.headers.get('Content-Type') || '';",
+                  "        pm.expect(contentType.toLowerCase()).to.include('xml');",
+                  "    });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/xml"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/pet/{{createdPetId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["pet", "{{createdPetId}}"]
+            },
+            "description": "Test getting pet with XML Accept header"
+          },
+          "response": []
+        },
+        {
+          "name": "TC19 - Get pet without Accept header",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response is valid', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.id).to.exist;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/pet/{{createdPetId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["pet", "{{createdPetId}}"]
+            },
+            "description": "Test default response format when no Accept header is sent"
+          },
+          "response": []
+        },
+        {
+          "name": "TC20 - Get pet - verify response time",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Response time is acceptable (< 2000ms)', function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+                  "});",
+                  "",
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/pet/{{createdPetId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["pet", "{{createdPetId}}"]
+            },
+            "description": "Performance test - verify response time is within acceptable limits"
+          },
+          "response": []
+        }
+      ],
+      "description": "Test cases for GET /pet/{petId} endpoint"
+    },
+    {
+      "name": "PUT /pet - Update Pet",
+      "item": [
+        {
+          "name": "TC21 - Update existing pet with valid data",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Pet name is updated', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.name).to.equal('UpdatedPetName');",
+                  "});",
+                  "",
+                  "pm.test('Pet status is updated', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.status).to.equal('sold');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": {{createdPetId}},\n  \"name\": \"UpdatedPetName\",\n  \"photoUrls\": [\"https://example.com/updated.jpg\"],\n  \"status\": \"sold\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/pet",
+              "host": ["{{baseUrl}}"],
+              "path": ["pet"]
+            },
+            "description": "Update existing pet with new name and status"
+          },
+          "response": []
+        },
+        {
+          "name": "TC22 - Update pet category",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Category is updated', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.category.name).to.equal('Cats');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": {{createdPetId}},\n  \"category\": {\n    \"id\": 2,\n    \"name\": \"Cats\"\n  },\n  \"name\": \"UpdatedCategoryPet\",\n  \"photoUrls\": [],\n  \"status\": \"available\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/pet",
+              "host": ["{{baseUrl}}"],
+              "path": ["pet"]
+            },
+            "description": "Update pet's category"
+          },
+          "response": []
+        },
+        {
+          "name": "TC23 - Update non-existent pet",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Request handled', function () {",
+                  "    // API may create or return error",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 404]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 999999999,\n  \"name\": \"NonExistentPet\",\n  \"photoUrls\": [],\n  \"status\": \"available\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/pet",
+              "host": ["{{baseUrl}}"],
+              "path": ["pet"]
+            },
+            "description": "Attempt to update non-existent pet"
+          },
+          "response": []
+        },
+        {
+          "name": "TC24 - Update pet with invalid JSON",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code indicates error', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([400, 500]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ malformed json"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/pet",
+              "host": ["{{baseUrl}}"],
+              "path": ["pet"]
+            },
+            "description": "Update pet with malformed JSON body"
+          },
+          "response": []
+        },
+        {
+          "name": "TC25 - Update pet - add multiple tags",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Tags are updated', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.tags).to.be.an('array');",
+                  "    pm.expect(jsonData.tags.length).to.equal(3);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": {{createdPetId}},\n  \"name\": \"TaggedPet\",\n  \"photoUrls\": [],\n  \"tags\": [\n    {\"id\": 1, \"name\": \"playful\"},\n    {\"id\": 2, \"name\": \"vaccinated\"},\n    {\"id\": 3, \"name\": \"neutered\"}\n  ],\n  \"status\": \"available\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/pet",
+              "host": ["{{baseUrl}}"],
+              "path": ["pet"]
+            },
+            "description": "Update pet with multiple tags"
+          },
+          "response": []
+        }
+      ],
+      "description": "Test cases for PUT /pet endpoint - Update existing pet"
+    },
+    {
+      "name": "DELETE /pet/{petId} - Delete Pet",
+      "item": [
+        {
+          "name": "TC26 - Delete existing pet",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Create a pet to delete",
+                  "const deleteId = Date.now() + 9999;",
+                  "pm.collectionVariables.set('petToDelete', deleteId);",
+                  "",
+                  "const createRequest = {",
+                  "    url: pm.collectionVariables.get('baseUrl') + '/pet',",
+                  "    method: 'POST',",
+                  "    header: {'Content-Type': 'application/json'},",
+                  "    body: {",
+                  "        mode: 'raw',",
+                  "        raw: JSON.stringify({",
+                  "            id: deleteId,",
+                  "            name: 'PetToDelete',",
+                  "            photoUrls: [],",
+                  "            status: 'available'",
+                  "        })",
+                  "    }",
+                  "};",
+                  "",
+                  "pm.sendRequest(createRequest, function(err, res) {",
+                  "    console.log('Created pet for deletion: ' + deleteId);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response confirms deletion', function () {",
+                  "    // Check response indicates success",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "api_key",
+                "value": "special-key"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/pet/{{petToDelete}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["pet", "{{petToDelete}}"]
+            },
+            "description": "Delete an existing pet"
+          },
+          "response": []
+        },
+        {
+          "name": "TC27 - Verify deleted pet not found",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 404', function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});",
+                  "",
+                  "pm.test('Pet not found message', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.message).to.equal('Pet not found');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/pet/{{petToDelete}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["pet", "{{petToDelete}}"]
+            },
+            "description": "Verify deleted pet returns 404"
+          },
+          "response": []
+        },
+        {
+          "name": "TC28 - Delete non-existent pet",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 404', function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "api_key",
+                "value": "special-key"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/pet/99999999999",
+              "host": ["{{baseUrl}}"],
+              "path": ["pet", "99999999999"]
+            },
+            "description": "Attempt to delete non-existent pet"
+          },
+          "response": []
+        },
+        {
+          "name": "TC29 - Delete pet with invalid ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code indicates error', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([400, 404]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "api_key",
+                "value": "special-key"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/pet/invalid",
+              "host": ["{{baseUrl}}"],
+              "path": ["pet", "invalid"]
+            },
+            "description": "Delete with invalid (non-numeric) ID"
+          },
+          "response": []
+        },
+        {
+          "name": "TC30 - Delete pet without api_key",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Request processed', function () {",
+                  "    // API may or may not require api_key",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 401, 403, 404]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/pet/12345",
+              "host": ["{{baseUrl}}"],
+              "path": ["pet", "12345"]
+            },
+            "description": "Test delete without api_key header"
+          },
+          "response": []
+        }
+      ],
+      "description": "Test cases for DELETE /pet/{petId} endpoint"
+    },
+    {
+      "name": "GET /pet/findByStatus - Find Pets by Status",
+      "item": [
+        {
+          "name": "TC31 - Find pets with status 'available'",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response is an array', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});",
+                  "",
+                  "pm.test('All pets have status available', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.length > 0) {",
+                  "        jsonData.forEach(function(pet) {",
+                  "            pm.expect(pet.status).to.equal('available');",
+                  "        });",
+                  "    }",
+                  "});",
+                  "",
+                  "pm.test('Response time is acceptable', function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/pet/findByStatus?status=available",
+              "host": ["{{baseUrl}}"],
+              "path": ["pet", "findByStatus"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "available"
+                }
+              ]
+            },
+            "description": "Find all pets with status 'available'"
+          },
+          "response": []
+        },
+        {
+          "name": "TC32 - Find pets with status 'pending'",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response is an array', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});",
+                  "",
+                  "pm.test('All pets have status pending', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.length > 0) {",
+                  "        jsonData.forEach(function(pet) {",
+                  "            pm.expect(pet.status).to.equal('pending');",
+                  "        });",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/pet/findByStatus?status=pending",
+              "host": ["{{baseUrl}}"],
+              "path": ["pet", "findByStatus"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "pending"
+                }
+              ]
+            },
+            "description": "Find all pets with status 'pending'"
+          },
+          "response": []
+        },
+        {
+          "name": "TC33 - Find pets with status 'sold'",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('All pets have status sold', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.length > 0) {",
+                  "        jsonData.forEach(function(pet) {",
+                  "            pm.expect(pet.status).to.equal('sold');",
+                  "        });",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/pet/findByStatus?status=sold",
+              "host": ["{{baseUrl}}"],
+              "path": ["pet", "findByStatus"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "sold"
+                }
+              ]
+            },
+            "description": "Find all pets with status 'sold'"
+          },
+          "response": []
+        },
+        {
+          "name": "TC34 - Find pets with multiple statuses",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response contains pets with different statuses', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "    if (jsonData.length > 0) {",
+                  "        const statuses = jsonData.map(pet => pet.status);",
+                  "        const validStatuses = ['available', 'pending'];",
+                  "        statuses.forEach(status => {",
+                  "            pm.expect(validStatuses).to.include(status);",
+                  "        });",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/pet/findByStatus?status=available&status=pending",
+              "host": ["{{baseUrl}}"],
+              "path": ["pet", "findByStatus"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "available"
+                },
+                {
+                  "key": "status",
+                  "value": "pending"
+                }
+              ]
+            },
+            "description": "Find pets with multiple status values"
+          },
+          "response": []
+        },
+        {
+          "name": "TC35 - Find pets with invalid status",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Request handled', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 400]);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    pm.test('Response is empty array for invalid status', function () {",
+                  "        const jsonData = pm.response.json();",
+                  "        pm.expect(jsonData).to.be.an('array');",
+                  "    });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/pet/findByStatus?status=invalid_status",
+              "host": ["{{baseUrl}}"],
+              "path": ["pet", "findByStatus"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "invalid_status"
+                }
+              ]
+            },
+            "description": "Find pets with invalid/non-existent status value"
+          },
+          "response": []
+        }
+      ],
+      "description": "Test cases for GET /pet/findByStatus endpoint"
+    }
+  ]
+}

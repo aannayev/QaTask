@@ -1,0 +1,59 @@
+{
+  "testUser": {
+    "email": "${DEMO_SHOP_EMAIL}",
+    "password": "${DEMO_SHOP_PASSWORD}"
+  },
+  "products": [
+    {
+      "name": "Build your own computer",
+      "category": "Computers > Desktops",
+      "url": "/build-your-own-computer",
+      "basePrice": 1200.0,
+      "quantity": 1,
+      "options": {
+        "processor": "2.2 GHz Intel Pentium Dual-Core E2200",
+        "ram": "2 GB",
+        "hdd": "320 GB",
+        "os": "Vista Home [+50.00]",
+        "software": ["Microsoft Office [+50.00]"]
+      }
+    },
+    {
+      "name": "14.1-inch Laptop",
+      "category": "Computers > Notebooks",
+      "url": "/141-inch-laptop",
+      "basePrice": 1590.0,
+      "quantity": 2
+    },
+    {
+      "name": "Blue and green Sneaker",
+      "category": "Apparel & Shoes > Shoes",
+      "url": "/blue-and-green-sneaker",
+      "basePrice": 11.0,
+      "quantity": 3
+    }
+  ],
+  "shippingAddress": {
+    "firstName": "John",
+    "lastName": "Doe",
+    "email": "john.doe@test.com",
+    "company": "Test Company",
+    "country": "United States",
+    "state": "California",
+    "city": "Los Angeles",
+    "address1": "123 Test Street",
+    "address2": "Apt 456",
+    "zip": "90001",
+    "phone": "1234567890",
+    "fax": ""
+  },
+  "paymentMethods": {
+    "checkMoneyOrder": "Check / Money Order",
+    "creditCard": "Credit Card",
+    "purchaseOrder": "Purchase Order"
+  },
+  "shippingMethods": {
+    "ground": "Ground",
+    "nextDayAir": "Next Day Air"
+  }
+}
