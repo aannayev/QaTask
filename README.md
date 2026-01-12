@@ -29,8 +29,8 @@ qa-automation-assignment/
 ├── manual-tests/           # Manual test cases
 │   └── ManualTestCases.md
 ├── docs/                   # Documentation
-│   ├── PerformanceTestPlan.md
-│   └── AI_Tools_Usage.md
+│   ├── Performance_Test_Plan_Demo_Web_Shop.docx
+│   └── AI_Tools_QA_Automation.docx
 ├── playwright.config.ts
 ├── package.json
 ├── tsconfig.json
@@ -288,6 +288,3 @@ This project demonstrates proficiency in:
 
 ---
 
-## 📄 License
-
-This project is created for demonstration purposes as part of a technical assessment.
